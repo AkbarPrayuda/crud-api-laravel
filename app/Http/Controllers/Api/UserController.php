@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Collections\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Services\UserService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -23,7 +24,16 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = $this->userService->getAllUser();
+        $users = $this->userService->getAllUsers();
+
+        if ($users->isEmpty()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'No users found',
+                'data' => []
+            ], 200);
+        }
+
         return new UserCollection($users);
     }
 
@@ -40,8 +50,15 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = $this->userService->getUserById($id);
-        return new UserResource($user);
+        try {
+            $user = $this->userService->getUserById($id);
+            return new UserResource($user);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User not found',
+            ], 404);
+        }
     }
 
     /**

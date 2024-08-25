@@ -3,11 +3,12 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
 
 class UserService {
     // Mengambil semua daftar User yang ada
-    public function getAllUser()
+    public function getAllUsers()
     {
         return User::all();
     }
@@ -15,7 +16,11 @@ class UserService {
     // Mengambil data user berdasarkan id
     public function getUserById($id)
     {
-        return User::findOrFail($id);
+        $user = User::find($id);
+        if (!$user) {
+            throw new ModelNotFoundException('User not found');
+        }
+        return $user;
     }
 
     // Membuat data User baru
