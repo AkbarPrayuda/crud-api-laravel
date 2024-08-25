@@ -5,12 +5,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return UserResource::collection(User::all());
-});
-Route::get('/user/{id}', function (string $id) {
-    return new UserResource(User::findOrFail($id));
-});
+Route::get('/user', [App\Http\Controllers\Api\UserController::class, 'index']);
+
+Route::get('/user/{id}', [App\Http\Controllers\Api\UserController::class, 'show']);
 Route::post('/user', function(Request $request) {
 
 });
