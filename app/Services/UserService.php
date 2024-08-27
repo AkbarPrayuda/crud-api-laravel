@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Exception;
 use Illuminate\Support\Facades\Hash;
 
 class UserService {
@@ -18,7 +18,7 @@ class UserService {
     {
         $user = User::find($id);
         if (!$user) {
-            throw new ModelNotFoundException('User not found');
+            throw new Exception('User not found');
         }
         return $user;
     }
@@ -27,22 +27,31 @@ class UserService {
     public function createUser(array $data)
     {
         $data['password'] = Hash::make($data['password']);
-        return User::create($data);
+        $user = User::create($data);
+        if(!$user){
+            throw new Exception('Failed to create User data');
+        }
+        return $user;
     }
 
     // Edit detail User
-    public function updateUser(User $user, array $data)
+    public function updateUser($id, array $data)
     {
+        $user = User::find($id);
         if (isset($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         }
-        $user->update($data);
+        $result = $user->update($data);
+        if(!$result) {
+            throw new Exception("Error Processing Request", 1);
+        }
         return $user;
     }
 
     // Menghapus User
-    public function deleteUser(User $user)
+    public function deleteUser($id)
     {
+        $user = User::find($id);
         $user->delete();
     }
 }
