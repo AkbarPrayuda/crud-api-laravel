@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Middleware\EnsureTokenIsValid;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('user')->group(function () {
+Route::prefix('user')->middleware('auth:sanctum')->group(function () {
     Route::get('', [App\Http\Controllers\Api\UserController::class, 'index']);
     Route::post('', [App\Http\Controllers\Api\UserController::class, 'store']);
     Route::get('{id}', [App\Http\Controllers\Api\UserController::class, 'show']);
